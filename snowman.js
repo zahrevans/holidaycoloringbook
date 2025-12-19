@@ -29,6 +29,8 @@ createApp({
         "#9b5de5",
       ],
 
+      saves: [],
+
       drawings: {
         snowman: [
           { type: "circle", attrs: { id: "bottom", cx: 150, cy: 320, r: 100 } },
@@ -84,18 +86,16 @@ createApp({
                 "150,32 159,56 184,56 164,71 172,95 150,80 128,95 136,71 116,56 141,56",
             },
           },
-
           {
             type: "path",
             attrs: {
               id: "treeBody",
               d: `M150 80 L120 125 L135 125 L100 175 L118 175
-          L80 235  L105 235 L60 310  L240 310
-          L195 235 L220 235 L182 175 L200 175
-          L165 125 L180 125 Z`,
+                  L80 235  L105 235 L60 310  L240 310
+                  L195 235 L220 235 L182 175 L200 175
+                  L165 125 L180 125 Z`,
             },
           },
-
           { type: "rect", attrs: { id: "trunk", x: 128, y: 310, width: 44, height: 75, rx: 6 } },
 
           { type: "circle", attrs: { id: "orn1", cx: 150, cy: 150, r: 10 } },
@@ -123,6 +123,10 @@ createApp({
     };
   },
 
+  mounted() {
+    this.loadSaves();
+  },
+
   methods: {
     setActiveColor(color) {
       this.activeColor = color;
@@ -138,33 +142,142 @@ createApp({
       else target.style.fill = this.activeColor;
     },
 
-    downloadSvg() {
+    // Build an SVG string that includes outlines/styles (so it downloads/saves correctly)
+    buildSvgString() {
       const svg = this.$refs.svgEl;
-      if (!svg) return;
+      if (!svg) return null;
 
       const clone = svg.cloneNode(true);
       clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
-      // Embed your CSS so outlines/linewidths download correctly
       const svgStyles = `
-    svg * { fill: white; stroke: black; stroke-width: 3; }
-    #eyeLeft, #eyeRight, #mouth1, #mouth2, #mouth3, #mouth4 { stroke-width: 2; }
-    #scarfWrap, #scarfTail { fill: rgb(255, 255, 255); }
-    .button { fill: rgb(255, 255, 255); stroke-width: 2; }
-    #armLeft, #armLeftTwig1, #armLeftTwig2,
-    #armRight, #armRightTwig1, #armRightTwig2 {
-      fill: white; stroke: #000000; stroke-width: 6; stroke-linecap: round;
-    }
-  `;
+        svg * { fill: white; stroke: black; stroke-width: 3; }
+        #eyeLeft, #eyeRight, #mouth1, #mouth2, #mouth3, #mouth4 { stroke-width: 2; }
+        #scarfWrap, #scarfTail { fill: rgb(255, 255, 255); }
+        .button { fill: rgb(255, 255, 255); stroke-width: 2; }
+        #armLeft, #armLeftTwig1, #armLeftTwig2,
+        #armRight, #armRightTwig1, #armRightTwig2 {
+          fill: white; stroke: #000000; stroke-width: 6; stroke-linecap: round;
+        }
+      `;
 
       const styleEl = document.createElementNS("http://www.w3.org/2000/svg", "style");
       styleEl.textContent = svgStyles;
-
-      // Put style first so it applies to everything
       clone.insertBefore(styleEl, clone.firstChild);
 
-      const xml = new XMLSerializer().serializeToString(clone);
-      const blob = new Blob([xml], { type: "image/svg+xml;charset=utf-8" });
+      return new XMLSerializer().serializeToString(clone);
+    },
+
+    // Save to "the site" for GitHub Pages: LocalStorage + gallery preview
+    saveToSite() {
+      const svgString = this.buildSvgString();
+      if (!svgString) return;
+
+      const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+      const name = `${this.current}-${new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace(/[:T]/g, "-")}`;
+
+      const encoded = encodeURIComponent(svgString)
+        .replace(/'/g, "%27")
+        .replace(/"/g, "%22");
+
+      const item = {
+        id,
+        name,
+        drawing: this.current,
+        createdAt: new Date().toISOString(),
+        svg: svgString,
+        dataUrl: `data:image/svg+xml;charset=utf-8,${encoded}`,
+      };
+
+      this.saves.unshift(item);
+      this.persistSaves();
+    },
+
+    loadSaves() {
+      try {
+        const raw = localStorage.getItem("coloringBookSaves");
+        this.saves = raw ? JSON.parse(raw) : [];
+      } catch {
+        this.saves = [];
+      }
+    },
+
+    persistSaves() {
+      localStorage.setItem("coloringBookSaves", JSON.stringify(this.saves));
+    },
+
+    clearSaves() {
+      this.saves = [];
+      localStorage.removeItem("coloringBookSaves");
+    },
+
+    // Click a thumbnail to load that saved SVG back into the canvas
+    loadSaved(item) {
+      this.current = item.drawing;
+
+      this.$nextTick(() => {
+        const svg = this.$refs.svgEl;
+        if (!svg) return;
+
+        const parsed = new DOMParser().parseFromString(item.svg, "image/svg+xml");
+        const savedSvg = parsed.documentElement;
+
+        svg.innerHTML = savedSvg.innerHTML;
+
+        const vb = savedSvg.getAttribute("viewBox");
+        if (vb) svg.setAttribute("viewBox", vb);
+      });
+    },
+
+    exportSavesJson() {
+      const blob = new Blob([JSON.stringify(this.saves, null, 2)], {
+        type: "application/json;charset=utf-8",
+      });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "saves.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      URL.revokeObjectURL(url);
+    },
+
+    importSavesJson(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+
+          if (!Array.isArray(data)) throw new Error("JSON must be an array.");
+
+          const existingIds = new Set(this.saves.map((s) => s.id));
+          const incoming = data.filter((s) => s && s.id && !existingIds.has(s.id));
+
+          this.saves = [...incoming, ...this.saves];
+          this.persistSaves();
+        } catch {
+          alert("Invalid saves.json file.");
+        } finally {
+          e.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    },
+
+    downloadSvg() {
+      const svgString = this.buildSvgString();
+      if (!svgString) return;
+
+      const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
@@ -176,6 +289,5 @@ createApp({
 
       URL.revokeObjectURL(url);
     },
-
   },
 }).mount("#app");

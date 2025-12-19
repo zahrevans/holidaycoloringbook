@@ -8,15 +8,16 @@ body {
 }
 
 .controls {
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
-svg {
-  width: 450px;
+.drawing {
+  width: min(520px, 95vw);
   cursor: pointer;
 }
 
-svg * {
+/* Default "coloring book" look */
+.drawing * {
   fill: white;
   stroke: black;
   stroke-width: 3;
@@ -31,6 +32,7 @@ svg * {
   stroke-width: 2;
 }
 
+/* Start white, but still fillable by clicking */
 #scarfWrap,
 #scarfTail {
   fill: rgb(255, 255, 255);
@@ -41,6 +43,7 @@ svg * {
   stroke-width: 2;
 }
 
+/* Arms are lines, we want thicker strokes */
 #armLeft,
 #armLeftTwig1,
 #armLeftTwig2,
@@ -53,10 +56,14 @@ svg * {
   stroke-linecap: round;
 }
 
+/* Palette */
 .palette {
   display: inline-flex;
   gap: 10px;
   align-items: center;
+  vertical-align: middle;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .color-btn {
@@ -66,6 +73,7 @@ svg * {
   border: 2px solid #222;
   cursor: pointer;
   padding: 0;
+  background: transparent;
 }
 
 .color-btn::before {
@@ -81,3 +89,25 @@ svg * {
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Gallery */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.thumb {
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 12px;
+  padding: 10px;
+  width: 160px;
+  cursor: pointer;
+}
+
+.thumb img {
+  width: 100%;
+  height: auto;
+  display: block;
+}

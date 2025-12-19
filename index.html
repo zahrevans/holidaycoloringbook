@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
     <link
@@ -10,6 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="snowman.css" />
+
     <title>Coloring Book</title>
   </head>
 
@@ -22,26 +24,31 @@
             class="btn btn-outline-primary"
             :class="{ active: current === 'snowman' }"
             @click="current = 'snowman'"
+            type="button"
           >
             Snowman
           </button>
+
           <button
             class="btn btn-outline-primary"
             :class="{ active: current === 'present' }"
             @click="current = 'present'"
+            type="button"
           >
             Present
           </button>
+
           <button
             class="btn btn-outline-primary"
             :class="{ active: current === 'tree' }"
             @click="current = 'tree'"
+            type="button"
           >
             Tree
           </button>
         </div>
 
-        <!-- Color picker -->
+        <!-- Controls -->
         <div class="controls">
           <div class="palette" role="group" aria-label="Color palette">
             <button
@@ -55,17 +62,55 @@
             ></button>
           </div>
 
-          <label class="ms-2">
+          <label class="ms-2 align-middle">
             Custom:
             <input type="color" v-model="activeColor" />
           </label>
+<br>
+
+          <button class="btn btn-success ms-3" type="button" @click="saveToSite">
+            Save to site
+          </button>
 
           <button
-            class="btn btn-primary ms-3"
+            class="btn btn-outline-secondary ms-2"
+            type="button"
+            @click="exportSavesJson"
+          >
+            Export saves.json
+          </button>
+
+          <button
+            class="btn btn-outline-secondary ms-2"
+            type="button"
+            @click="$refs.importer.click()"
+          >
+            Import saves.json
+          </button>
+
+          <input
+            ref="importer"
+            type="file"
+            accept="application/json"
+            class="d-none"
+            @change="importSavesJson"
+          />
+
+          <button
+            class="btn btn-primary ms-2"
             type="button"
             @click="downloadSvg"
           >
             Download SVG
+          </button>
+
+          <button
+            class="btn btn-outline-danger ms-2"
+            type="button"
+            @click="clearSaves"
+            v-if="saves.length"
+          >
+            Clear saves
           </button>
         </div>
 
@@ -86,6 +131,25 @@
             :attrs="el.attrs"
           ></svg-el>
         </svg>
+
+        <!-- Saved Gallery -->
+        <div class="mt-4" v-if="saves.length">
+          <h5 class="mb-2">Saved Gallery</h5>
+
+          <div class="gallery">
+            <button
+              class="thumb"
+              v-for="item in saves"
+              :key="item.id"
+              type="button"
+              @click="loadSaved(item)"
+              title="Click to load"
+            >
+              <img :src="item.dataUrl" :alt="item.name" />
+              <small class="d-block mt-1">{{ item.name }}</small>
+            </button>
+          </div>
+        </div>
       </div>
     </main>
 
