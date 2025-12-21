@@ -125,38 +125,40 @@
           </button>
         </div>
 
-        <!-- SVG DRAWING -->
-        <svg
-          :key="current"
-          ref="svgEl"
-          class="drawing"
-          viewBox="0 0 300 450"
-          xmlns="http://www.w3.org/2000/svg"
-          @click="paint"
-        >
-          <svg-el
-            v-for="(el, i) in drawings[current]"
-            :key="(el.attrs.id ? el.attrs.id : i) + '-' + current"
-            :type="el.type"
-            :attrs="el.attrs"
-          ></svg-el>
-        </svg>
+        <!-- Wrap the drawing + gallery in a relative container -->
+        <div class="drawing-gallery-wrapper">
+          <!-- SVG DRAWING -->
+          <svg
+            :key="current"
+            ref="svgEl"
+            class="drawing"
+            viewBox="0 0 300 450"
+            xmlns="http://www.w3.org/2000/svg"
+            @click="paint"
+          >
+            <svg-el
+              v-for="(el, i) in drawings[current]"
+              :key="(el.attrs.id ? el.attrs.id : i) + '-' + current"
+              :type="el.type"
+              :attrs="el.attrs"
+            ></svg-el>
+          </svg>
 
-        <!-- SAVED GALLERY -->
-        <div class="mt-4" v-if="saves.length">
-          <h5 class="mb-2">Saved Gallery</h5>
-
-          <div class="gallery">
-            <button
-              class="thumb"
-              v-for="item in saves"
-              :key="item.id"
-              type="button"
-              @click="loadSaved(item)"
-            >
-              <img :src="item.dataUrl" :alt="item.name" />
-              <small>{{ item.name }}</small>
-            </button>
+          <!-- SAVED GALLERY -->
+          <div class="gallery-container" v-if="saves.length">
+            <h5 class="gallery-title">Saved Gallery</h5>
+            <div class="gallery">
+              <button
+                class="thumb"
+                v-for="item in saves"
+                :key="item.id"
+                type="button"
+                @click="loadSaved(item)"
+              >
+                <img :src="item.dataUrl" :alt="item.name" />
+                <small>{{ item.name }}</small>
+              </button>
+            </div>
           </div>
         </div>
       </div>

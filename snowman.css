@@ -33,7 +33,7 @@ body {
 /* FLOATING PALETTE */
 .floating-palette {
   position: fixed;
-  left: 28px; /* margin from left */
+  left: 60px; /* margin from left */
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
@@ -106,6 +106,61 @@ body {
 .controls .btn {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
+}
+
+.btn-group .btn,
+.controls .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  border-width: 2.5px;
+  color: #b22222; /* Firebrick red */
+  background: #fff0f0; /* very light pinkish */
+  border-color: #b22222;
+  box-shadow: 0 3px 6px rgba(178, 34, 34, 0.4);
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.4s ease,
+    transform 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-group .btn.active,
+.controls .btn.active {
+  background-color: #b22222; /* firebrick */
+  color: #fff8f0;
+  border-color: #8b0000; /* dark red */
+  box-shadow: 0 0 15px 4px #b22222;
+  transform: scale(1.1);
+  z-index: 2;
+}
+
+/* Active hover (optional) */
+.btn-group .btn.active:hover,
+.controls .btn.active:hover {
+  background-color: #8b0000;
+  box-shadow: 0 0 20px 5px #8b0000;
+  cursor: default;
+  transform: scale(1.12);
+}
+
+/* Add subtle sparkle animation on hover for fun (optional) */
+@keyframes sparkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-2px);
+  }
+}
+
+/* Remove sparkle for active buttons (optional) */
+.btn-group .btn.active::after,
+.controls .btn.active::after {
+  content: none;
 }
 
 /* SVG */
