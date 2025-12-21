@@ -174,10 +174,10 @@ createApp({
       if (!svgString) return;
 
       const id = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
-      const name = `${this.current}-${new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace(/[:T]/g, "-")}`;
+      let name = prompt("Name this drawing:", this.current);
+      if (name === null) return;
+
+      name = this.sanitizeFilename(name) || `${this.current}-${Date.now()}`;
 
       const encoded = encodeURIComponent(svgString)
         .replace(/'/g, "%27")
@@ -277,17 +277,42 @@ createApp({
       const svgString = this.buildSvgString();
       if (!svgString) return;
 
-      const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+      let name = prompt("Name your Drawing:", this.current);
+
+      // User pressed cancel
+      if (name === null) return;
+
+      name = this.sanitizeFilename(name);
+
+      // Fallback name if empty after sanitizing
+      if (!name) {
+        name = `${this.current}-${Date.now()}`;
+      }
+
+      const blob = new Blob([svgString], {
+        type: "image/svg+xml;charset=utf-8",
+      });
+
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${this.current}.svg`;
+      a.download = `${name}.svg`;
       document.body.appendChild(a);
       a.click();
       a.remove();
 
       URL.revokeObjectURL(url);
+    },
+
+    sanitizeFilename(name) {
+      return name
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")          // spaces → dashes
+        .replace(/[^a-z0-9-_]/g, "")   // remove symbols
+        .replace(/-+/g, "-")           // collapse dashes
+        .replace(/^[-_]+|[-_]+$/g, ""); // trim edges
     },
   },
 }).mount("#app");

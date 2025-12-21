@@ -16,6 +16,7 @@
   </head>
 
   <body>
+    <div class="snow"></div>
     <main>
       <div id="app" class="container py-3 text-center">
         <!-- Top buttons -->
@@ -66,9 +67,13 @@
             Custom:
             <input type="color" v-model="activeColor" />
           </label>
-<br>
+          <br />
 
-          <button class="btn btn-success ms-3" type="button" @click="saveToSite">
+          <button
+            class="btn btn-success ms-3"
+            type="button"
+            @click="saveToSite"
+          >
             Save to site
           </button>
 
