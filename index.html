@@ -80,7 +80,7 @@
             type="button"
             @click="saveToSite"
           >
-            Save to site
+            Save to Gallery
           </button>
 
           <button
@@ -88,7 +88,7 @@
             type="button"
             @click="exportSavesJson"
           >
-            Export saves.json
+            Download Gallery
           </button>
 
           <button
@@ -96,7 +96,7 @@
             type="button"
             @click="$refs.importer.click()"
           >
-            Import saves.json
+            Import Gallery
           </button>
 
           <input
@@ -112,7 +112,7 @@
             type="button"
             @click="downloadSvg"
           >
-            Download SVG
+            Download Drawing
           </button>
 
           <button
@@ -121,7 +121,7 @@
             @click="clearSaves"
             v-if="saves.length"
           >
-            Clear saves
+            Clear Gallery
           </button>
         </div>
 

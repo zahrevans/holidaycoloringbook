@@ -33,7 +33,7 @@ body {
 /* FLOATING PALETTE */
 .floating-palette {
   position: fixed;
-  left: 60px; /* margin from left */
+  left: 30vh; /* margin from left */
   top: 50%;
   transform: translateY(-50%);
   z-index: 20;
