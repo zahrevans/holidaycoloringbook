@@ -11,7 +11,7 @@ body {
   padding: 20px;
 }
 
-/* Snow background */
+/* ❄️ Snow background */
 .snow {
   position: fixed;
   inset: 0;
@@ -30,11 +30,11 @@ body {
   }
 }
 
-/* FLOATING PALETTE */
+/* 🎨 FLOATING PALETTE */
 .floating-palette {
   position: fixed;
-  left: 30vh; /* margin from left */
-  top: 50%;
+  left: 30vh;
+  top: 55%;
   transform: translateY(-50%);
   z-index: 20;
 }
@@ -97,7 +97,7 @@ body {
   cursor: pointer;
 }
 
-/* Controls */
+/* 🎛️ Controls */
 .controls {
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
@@ -114,116 +114,122 @@ body {
   font-weight: 600;
   padding: 0.5rem 1.2rem;
   border-width: 2.5px;
-  color: #b22222; /* Firebrick red */
-  background: #fff0f0; /* very light pinkish */
+  color: #b22222;
+  background: #fff0f0;
   border-color: #b22222;
   box-shadow: 0 3px 6px rgba(178, 34, 34, 0.4);
   transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.4s ease,
     transform 0.2s ease;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn-group .btn.active,
 .controls .btn.active {
-  background-color: #b22222; /* firebrick */
+  background-color: #b22222;
   color: #fff8f0;
-  border-color: #8b0000; /* dark red */
+  border-color: #8b0000;
   box-shadow: 0 0 15px 4px #b22222;
   transform: scale(1.1);
   z-index: 2;
 }
 
-/* Active hover (optional) */
-.btn-group .btn.active:hover,
-.controls .btn.active:hover {
-  background-color: #8b0000;
-  box-shadow: 0 0 20px 5px #8b0000;
-  cursor: default;
-  transform: scale(1.12);
-}
-
-/* Add subtle sparkle animation on hover for fun (optional) */
-@keyframes sparkle {
-  0%,
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 0.5;
-    transform: translateY(-2px);
-  }
-}
-
-/* Remove sparkle for active buttons (optional) */
-.btn-group .btn.active::after,
-.controls .btn.active::after {
-  content: none;
-}
-
-/* SVG */
+/* ✏️ SVG Drawing */
 .drawing {
   max-height: 60vh;
   width: auto;
   max-width: 100%;
 }
 
-/* Coloring style */
 .drawing * {
   fill: white;
   stroke: black;
   stroke-width: 3;
 }
 
-/* Gallery */
-/* Gallery container */
-.gallery {
+/* 🖼️ RIGHT-SIDE GALLERY PANEL */
+.gallery-container {
+  position: fixed;
+  right: 20px;
+  top: 55%;
+  transform: translateY(-50%);
+
+  width: 360px;
+  max-height: 360px;
+
+  padding: 12px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+
+  z-index: 15;
+
   display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  align-items: flex-end;
-  max-height: none; /* allow full height */
-  overflow: visible; /* no clipping */
+  flex-direction: column;
 }
 
-/* Thumbnail button */
-.gallery {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
-  align-items: flex-end;
-  max-height: none;
-  overflow: visible;
+/* Gallery title */
+.gallery-title {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 8px;
 }
 
+/* Scrollable grid */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Scrollbar */
+.gallery::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gallery::-webkit-scrollbar-thumb {
+  background: #b22222;
+  border-radius: 10px;
+}
+
+/* Thumbnail cards */
 .thumb {
-  border: 1px solid #ddd;
+  width: 100%;
+  padding: 6px;
+
+  border-radius: 14px;
   background: white;
-  border-radius: 12px;
-  padding: 8px;
-  width: 160px;
-  cursor: pointer;
+  border: 1px solid #ddd;
 
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.thumb:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .thumb img {
   width: 100%;
-  height: auto;
-  max-height: 120px;
+  max-height: 90px;
   object-fit: contain;
 }
 
 .thumb small {
-  display: block !important;
-  font-size: 0.7rem;
-  margin-top: 6px;
+  font-size: 0.65rem;
+  margin-top: 4px;
   text-align: center;
-  line-height: 1.1;
   color: #333;
   user-select: none;
 }
